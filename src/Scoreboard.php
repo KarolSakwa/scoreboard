@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WorldCup;
 
+use DomainException;
 use InvalidArgumentException;
 
 final class Scoreboard
@@ -22,9 +23,14 @@ final class Scoreboard
             throw new InvalidArgumentException('Team name cannot be empty.');
         }
 
-        if ($this->teamKey($homeTeam) === $this->teamKey($awayTeam)) {
+        $homeKey = $this->teamKey($homeTeam);
+        $awayKey = $this->teamKey($awayTeam);
+
+        if ($homeKey === $awayKey) {
             throw new InvalidArgumentException('Teams must be different.');
         }
+
+        $this->assertTeamsAvailable($homeKey, $awayKey);
 
         $id = $this->nextId;
         $this->games[$id] = new Game($id, $homeTeam, $awayTeam);
@@ -48,6 +54,17 @@ final class Scoreboard
             ),
             array_values($this->games),
         );
+    }
+
+    private function assertTeamsAvailable(string $homeKey, string $awayKey): void
+    {
+        foreach ($this->games as $game) {
+            $activeKeys = [$this->teamKey($game->homeTeam()), $this->teamKey($game->awayTeam())];
+
+            if (in_array($homeKey, $activeKeys, true) || in_array($awayKey, $activeKeys, true)) {
+                throw new DomainException('Team is already playing an active game.');
+            }
+        }
     }
 
     private function teamKey(string $displayName): string

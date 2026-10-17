@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WorldCup;
 
+use InvalidArgumentException;
+
 final class Scoreboard
 {
     /** @var array<int, Game> */
@@ -13,6 +15,17 @@ final class Scoreboard
 
     public function startGame(string $homeTeam, string $awayTeam): int
     {
+        $homeTeam = trim($homeTeam);
+        $awayTeam = trim($awayTeam);
+
+        if ($homeTeam === '' || $awayTeam === '') {
+            throw new InvalidArgumentException('Team name cannot be empty.');
+        }
+
+        if ($this->teamKey($homeTeam) === $this->teamKey($awayTeam)) {
+            throw new InvalidArgumentException('Teams must be different.');
+        }
+
         $id = $this->nextId;
         $this->games[$id] = new Game($id, $homeTeam, $awayTeam);
         $this->nextId++;
@@ -35,5 +48,10 @@ final class Scoreboard
             ),
             array_values($this->games),
         );
+    }
+
+    private function teamKey(string $displayName): string
+    {
+        return mb_strtolower($displayName, 'UTF-8');
     }
 }

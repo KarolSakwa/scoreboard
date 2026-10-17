@@ -6,12 +6,14 @@ namespace WorldCup;
 
 final class Game
 {
+    private int $homeScore = 0;
+
+    private int $awayScore = 0;
+
     public function __construct(
         private readonly int $id,
         private readonly string $homeTeam,
         private readonly string $awayTeam,
-        private int $homeScore = 0,
-        private int $awayScore = 0,
     ) {
     }
 

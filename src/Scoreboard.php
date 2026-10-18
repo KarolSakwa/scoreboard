@@ -40,17 +40,20 @@ final class Scoreboard
         return $id;
     }
 
+    public function finishGame(int $gameId): void
+    {
+        $this->activeGame($gameId);
+
+        unset($this->games[$gameId]);
+    }
+
     public function updateScore(int $gameId, int $homeScore, int $awayScore): void
     {
         if ($homeScore < 0 || $awayScore < 0) {
             throw new InvalidArgumentException('Score cannot be negative.');
         }
 
-        if (!isset($this->games[$gameId])) {
-            throw new OutOfBoundsException('Game does not exist.');
-        }
-
-        $this->games[$gameId]->updateScore($homeScore, $awayScore);
+        $this->activeGame($gameId)->updateScore($homeScore, $awayScore);
     }
 
     /**
@@ -68,6 +71,15 @@ final class Scoreboard
             ),
             array_values($this->games),
         );
+    }
+
+    private function activeGame(int $gameId): Game
+    {
+        if (!isset($this->games[$gameId])) {
+            throw new OutOfBoundsException('Game does not exist.');
+        }
+
+        return $this->games[$gameId];
     }
 
     private function assertTeamsAvailable(string $homeKey, string $awayKey): void

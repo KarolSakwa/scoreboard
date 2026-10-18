@@ -6,6 +6,7 @@ namespace WorldCup;
 
 use DomainException;
 use InvalidArgumentException;
+use OutOfBoundsException;
 
 final class Scoreboard
 {
@@ -41,6 +42,14 @@ final class Scoreboard
 
     public function updateScore(int $gameId, int $homeScore, int $awayScore): void
     {
+        if ($homeScore < 0 || $awayScore < 0) {
+            throw new InvalidArgumentException('Score cannot be negative.');
+        }
+
+        if (!isset($this->games[$gameId])) {
+            throw new OutOfBoundsException('Game does not exist.');
+        }
+
         $this->games[$gameId]->updateScore($homeScore, $awayScore);
     }
 

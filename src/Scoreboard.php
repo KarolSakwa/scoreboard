@@ -69,8 +69,24 @@ final class Scoreboard
                 $game->homeScore(),
                 $game->awayScore(),
             ),
-            array_values($this->games),
+            $this->sortGamesForSummary(array_values($this->games)),
         );
+    }
+
+    /**
+     * @param list<Game> $games
+     *
+     * @return list<Game>
+     */
+    private function sortGamesForSummary(array $games): array
+    {
+        usort(
+            $games,
+            static fn (Game $left, Game $right): int => $right->totalGoals() <=> $left->totalGoals()
+                ?: $right->id() <=> $left->id(),
+        );
+
+        return $games;
     }
 
     private function activeGame(int $gameId): Game

@@ -42,6 +42,11 @@ final class Game
         return $this->awayScore;
     }
 
+    public function totalGoals(): int
+    {
+        return $this->homeScore + $this->awayScore;
+    }
+
     public function updateScore(int $homeScore, int $awayScore): void
     {
         $this->homeScore = $homeScore;

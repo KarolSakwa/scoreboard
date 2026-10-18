@@ -39,6 +39,11 @@ final class Scoreboard
         return $id;
     }
 
+    public function updateScore(int $gameId, int $homeScore, int $awayScore): void
+    {
+        $this->games[$gameId]->updateScore($homeScore, $awayScore);
+    }
+
     /**
      * @return list<GameSummary>
      */
